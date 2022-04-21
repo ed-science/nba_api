@@ -65,20 +65,23 @@ def get_endpoint_contents(endpoint, endpoint_analysis):
     if imports_list:
         imports = imports_template.format(imports_list=', '.join(imports_list))
 
-    file_contents = file_template.format(imports=imports, endpoint=endpoint, endpoint_lowercase=endpoint.lower(),
-                                         data_sets=data_sets, arguments=arguments, parameters=parameters,
-                                         data_set_variables=data_set_variables)
-
-    return file_contents
+    return file_template.format(
+        imports=imports,
+        endpoint=endpoint,
+        endpoint_lowercase=endpoint.lower(),
+        data_sets=data_sets,
+        arguments=arguments,
+        parameters=parameters,
+        data_set_variables=data_set_variables,
+    )
 
 
 def generate_endpoint_file(endpoint, file_contents, directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
     file_name = '{endpoint_lowercase}.py'.format(endpoint_lowercase=endpoint.lower())
-    f = open(os.path.join(os.getcwd(), directory, file_name), 'w')
-    f.write(file_contents)
-    f.close()
+    with open(os.path.join(os.getcwd(), directory, file_name), 'w') as f:
+        f.write(file_contents)
 
 
 def generate_endpoint_files(directory='endpoint_files'):

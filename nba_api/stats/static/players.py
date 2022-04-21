@@ -4,11 +4,11 @@ from nba_api.stats.library.data import player_index_id, player_index_full_name, 
 
 
 def _find_players(regex_pattern, row_id):
-    players_found = []
-    for player in players:
-        if re.search(regex_pattern, str(player[row_id]), flags=re.I):
-            players_found.append(_get_player_dict(player))
-    return players_found
+    return [
+        _get_player_dict(player)
+        for player in players
+        if re.search(regex_pattern, str(player[row_id]), flags=re.I)
+    ]
 
 
 def _get_player_dict(player_row):
@@ -34,7 +34,7 @@ def find_players_by_last_name(regex_pattern):
 
 
 def find_player_by_id(player_id):
-    regex_pattern = '^{}$'.format(player_id)
+    regex_pattern = f'^{player_id}$'
     players_list = _find_players(regex_pattern, player_index_id)
     if len(players_list) > 1:
         raise Exception('Found more than 1 id')
@@ -45,23 +45,20 @@ def find_player_by_id(player_id):
 
 
 def get_players():
-    players_list = []
-    for player in players:
-        players_list.append(_get_player_dict(player))
-    return players_list
+    return [_get_player_dict(player) for player in players]
 
 
 def get_active_players():
-    players_list = []
-    for player in players:
-        if player[player_index_is_active]:
-            players_list.append(_get_player_dict(player))
-    return players_list
+    return [
+        _get_player_dict(player)
+        for player in players
+        if player[player_index_is_active]
+    ]
 
 
 def get_inactive_players():
-    players_list = []
-    for player in players:
-        if not player[player_index_is_active]:
-            players_list.append(_get_player_dict(player))
-    return players_list
+    return [
+        _get_player_dict(player)
+        for player in players
+        if not player[player_index_is_active]
+    ]

@@ -37,9 +37,7 @@ class NBAStatsResponse(http.NBAResponse):
 
             rows = []
             for raw_row in row_set:
-                row = {}
-                for i in range(len(headers)):
-                    row[headers[i]] = raw_row[i]
+                row = {headers[i]: raw_row[i] for i in range(len(headers))}
                 rows.append(row)
             data[name] = rows
 
@@ -59,7 +57,7 @@ class NBAStatsResponse(http.NBAResponse):
         parameters = {}
         for parameter in self.get_dict()['parameters']:
             for key, value in parameter.items():
-                parameters.update({key: value})
+                parameters[key] = value
         return parameters
 
     def get_headers_from_data_sets(self):
@@ -69,9 +67,7 @@ class NBAStatsResponse(http.NBAResponse):
         else:
             results = raw_dict['resultSet']
         if isinstance(results, dict):
-            if 'name' not in results:
-                return {}
-            return {results['name']: results['headers']}
+            return {} if 'name' not in results else {results['name']: results['headers']}
         return {result_set['name']: result_set['headers'] for result_set in results}
 
     def get_data_sets(self):

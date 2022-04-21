@@ -20,8 +20,7 @@ def get_endpoint_query_string_parameters(parameters, nullable_parameters, parame
             pattern_key = parameter_map[parameter][map_key][parameter_patterns[parameter]]
             value = parameter_variations[pattern_key]['parameter_value']
         params[parameter] = value
-    valid_url = urllib.parse.urlencode(params)
-    return valid_url
+    return urllib.parse.urlencode(params)
 
 
 def get_endpoint_documentation(endpoint, endpoints_information):
@@ -72,14 +71,15 @@ def get_endpoint_documentation(endpoint, endpoints_information):
 
     json_text = json.dumps(endpoint_analysis, sort_keys=True, indent=4)
 
-    documentation_text = endpoint_documentation_template.format(endpoint=endpoint, endpoint__lowercase=endpoint.lower(),
-                                                                query_string_parameters=query_string_parameters,
-                                                                json=json_text,
-                                                                parameters='\n'.join(parameter_texts),
-                                                                data_sets='\n'.join(data_set_texts),
-                                                                validated_date=datetime.now().date())
-
-    return documentation_text
+    return endpoint_documentation_template.format(
+        endpoint=endpoint,
+        endpoint__lowercase=endpoint.lower(),
+        query_string_parameters=query_string_parameters,
+        json=json_text,
+        parameters='\n'.join(parameter_texts),
+        data_sets='\n'.join(data_set_texts),
+        validated_date=datetime.now().date(),
+    )
 
 
 def generate_all_endpoint_documentation(directory='endpoint_documentation'):
@@ -88,6 +88,6 @@ def generate_all_endpoint_documentation(directory='endpoint_documentation'):
         if endpoints_information[endpoint]['status'] != 'success':
             continue
         file_path = get_file_path(directory)
-        file_name = '{}.md'.format(endpoint.lower())
+        file_name = f'{endpoint.lower()}.md'
         contents = get_endpoint_documentation(endpoint=endpoint, endpoints_information=endpoints_information)
         save_file(file_path=file_path, file_name=file_name, contents=contents)

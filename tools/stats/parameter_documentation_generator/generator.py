@@ -15,8 +15,6 @@ def _get_class_information(cls, variable_names_to_exclude=None):
     variables = []
     default = getattr(cls, 'default')
     for var in dir(cls):
-        variable = {}
-
         if '__' in var or var == 'default' or var in variable_names_to_exclude:
             continue
 
@@ -27,10 +25,13 @@ def _get_class_information(cls, variable_names_to_exclude=None):
             var_name = "{var_name}()".format(var_name=var_name)
 
         default_value = getattr(cls, var)
-        variable['name'] = var_name
-        variable['default_value'] = default_value
-        variable['default'] = default_value == default
-        variable['function'] = is_function
+        variable = {
+            'name': var_name,
+            'default_value': default_value,
+            'default': default_value == default,
+            'function': is_function,
+        }
+
         variable_names_to_exclude.append(var)
         variables.append(variable)
     return variables, variable_names_to_exclude
@@ -54,9 +55,7 @@ def get_library_classes(module=parameters):
 
 
 def get_parameter_map_parameters():
-    parameters = list(parameter_map.keys())
-    parameters.sort()
-    return parameters
+    return sorted(parameter_map.keys())
 
 
 def get_parameter_map_patterns():
@@ -92,20 +91,16 @@ def _get_variable_table_from_library_class(library_class):
             additional_tags.append('`default` ')
         if is_function:
             additional_tags.append('`function` ')
-        if additional_tags:
-            additional_tags = ' '.join(additional_tags)
-        else:
-            additional_tags = ''
+        additional_tags = ' '.join(additional_tags) if additional_tags else ''
         if callable(value):
-            value = '{}()'.format(name)
+            value = f'{name}()'
         variable_line = variable_line_template.format(name=name, value=value, additional_tags=additional_tags).replace(
             '``', '')
         if is_default:
             variable_lines.insert(0, variable_line)
         else:
             variable_lines.append(variable_line)
-    variable_body = variable_body_template.format(variables='\n'.join(variable_lines))
-    return variable_body
+    return variable_body_template.format(variables='\n'.join(variable_lines))
 
 
 def _get_class_documentation_text(parameter, pattern_info, library_classes):

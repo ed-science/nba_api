@@ -603,11 +603,14 @@ class SeasonYearNullable(_NotRequired, SeasonYear):
     pass
 
 
+
+
 class Season(SeasonYear):
     current_season_year = SeasonYear.current_season_year
-    current_season = '{}-{}'.format(current_season_year, str(current_season_year + 1)[2:])
+    current_season = f'{current_season_year}-{str(current_season_year + 1)[2:]}'
 
     default = current_season
+
 
 
 class SeasonNullable(_NotRequired, Season):
@@ -632,7 +635,7 @@ class SeasonAllTime(Season):
 
 class SeasonID(SeasonYear):
     def get_season_id(self, season_year):
-        return "2{}".format(season_year)
+        return f"2{season_year}"
 
     current_season_year = SeasonYear.current_season_year
     current_season_year = "2{}".format(current_season_year)
@@ -689,7 +692,7 @@ class ShotClockRange:
             return '15-7 Average'
         elif 4 < i <= 7:
             return '7-4 Late'
-        elif 0 < i <= 4:
+        else:
             return '4-0 Very Late'
 
     range_22_24 = '24-22'

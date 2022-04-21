@@ -225,7 +225,7 @@ def test_player(play):
     search_result = re_player.search(play['description'])
 
     #Player Name
-    player = search_result.group('player')
+    player = search_result['player']
     assert player == play['player']
     
 #REBOUND PLAYER

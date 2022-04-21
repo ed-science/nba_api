@@ -54,9 +54,8 @@ def write_static_data_file(directory, file_contents):
     if not os.path.exists(directory):
         os.makedirs(directory)
     file_name = 'data.py'
-    f = open(os.path.join(os.getcwd(), directory, file_name), 'w')
-    f.write(file_contents)
-    f.close()
+    with open(os.path.join(os.getcwd(), directory, file_name), 'w') as f:
+        f.write(file_contents)
 
 
 def generate_static_data_file(directory='static_files'):

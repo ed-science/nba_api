@@ -5,11 +5,11 @@ from nba_api.stats.library.data import team_index_city, team_index_state, team_i
 
 
 def _find_teams(regex_pattern, row_id):
-    teams_found = []
-    for team in teams:
-        if re.search(regex_pattern, str(team[row_id]), flags=re.I):
-            teams_found.append(_get_team_dict(team))
-    return teams_found
+    return [
+        _get_team_dict(team)
+        for team in teams
+        if re.search(regex_pattern, str(team[row_id]), flags=re.I)
+    ]
 
 
 def _get_team_dict(team_row):
@@ -41,15 +41,15 @@ def find_teams_by_nickname(regex_pattern):
 
 
 def find_teams_by_year_founded(year):
-    teams_found = []
-    for team in teams:
-        if team[team_index_year_founded] == year:
-            teams_found.append(_get_team_dict(team))
-    return teams_found
+    return [
+        _get_team_dict(team)
+        for team in teams
+        if team[team_index_year_founded] == year
+    ]
 
 
 def find_team_by_abbreviation(abbreviation):
-    regex_pattern = '^{}$'.format(abbreviation)
+    regex_pattern = f'^{abbreviation}$'
     teams_list = _find_teams(regex_pattern, team_index_abbreviation)
     if len(teams_list) > 1:
         raise Exception('Found more than 1 id')
@@ -60,7 +60,7 @@ def find_team_by_abbreviation(abbreviation):
 
 
 def find_team_name_by_id(team_id):
-    regex_pattern = '^{}$'.format(team_id)
+    regex_pattern = f'^{team_id}$'
     teams_list = _find_teams(regex_pattern, team_index_id)
     if len(teams_list) > 1:
         raise Exception('Found more than 1 id')
@@ -71,7 +71,4 @@ def find_team_name_by_id(team_id):
 
 
 def get_teams():
-    teams_list = []
-    for team in teams:
-        teams_list.append(_get_team_dict(team))
-    return teams_list
+    return [_get_team_dict(team) for team in teams]

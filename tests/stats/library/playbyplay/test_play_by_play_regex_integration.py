@@ -21,11 +21,7 @@ def get_game_ids():
                                 game_date=datetime.datetime.now()) 
 
     games_dict = gamefinder.get_normalized_dict()
-    games = []
-    for game in games_dict['GameHeader']:
-        games.append(game['GAME_ID'])
-
-    return games
+    return [game['GAME_ID'] for game in games_dict['GameHeader']]
 
 def get_play_by_play(game_id):
     # Delay briefly to prevent throttling
@@ -41,7 +37,7 @@ def play(request):
     return request.param
 
 def test_play(game, play):
-    for count in range(0, 1):
+    for count in range(1):
         dict_patterns = eventmsgtype_to_re[EventMsgType(play["EVENTMSGTYPE"])]
         description = play["HOMEDESCRIPTION"] if count == 0 else play["VISITORDESCRIPTION"]
 
@@ -55,5 +51,5 @@ def test_play(game, play):
                 msg = 'EVENTMSGTYPE {eventmsgtype}: [{description}]\n\tAttempted Patterns\n'.format(eventmsgtype=play["EVENTMSGTYPE"], description=description )
                 for pattern in dict_patterns:
                     msg += '\t\t{pattern}\n'.format(pattern=pattern.pattern)
-                
+
                 assert False, msg

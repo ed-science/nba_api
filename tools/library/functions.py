@@ -2,7 +2,7 @@ import re
 
 
 def capital_letter_replacement(match):
-    return "_" + match.group(1).lower()
+    return f"_{match.group(1).lower()}"
 
 
 def get_python_variable_name(parameter):
@@ -61,7 +61,7 @@ def get_python_variable_name(parameter):
         parameter = parameter.replace(find, replace)
 
     if re.search('^[a-z]', parameter):
-        parameter = '_' + parameter
+        parameter = f'_{parameter}'
     variable_name = re.sub(r'([A-Z])(?!$|Nullable|Round|Defend$)', capital_letter_replacement, parameter)[1:].lower()
     variable_name = variable_name.replace('__', '_')
     return variable_name

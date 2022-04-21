@@ -78,11 +78,11 @@ def get_patterns_from_response(nba_stats_response):
         prop = None
         pattern = None
         if parameter_regex_match:
-            prop = parameter_regex_match.group(1)
-            pattern = parameter_regex_match.group(2)
+            prop = parameter_regex_match[1]
+            pattern = parameter_regex_match[2]
             prop = prop.replace(' ', '')
         elif invalid_parameter_match:
-            prop = invalid_parameter_match.group(1)
+            prop = invalid_parameter_match[1]
             prop = prop.replace(' ', '')
         elif match in [' Invalid date', '<Error><Message>An error has occurred.</Message></Error>', 'Invalid game date',
                        ' Invalid game date']:
@@ -112,7 +112,7 @@ def get_required_parameters(endpoint, nba_stats_response):
             continue
         elif not required_parameter:
             raise Exception('Failed to find required_parameter in match.', match)
-        required_parameter = required_parameter.group(1).replace(' ', '')
+        required_parameter = required_parameter[1].replace(' ', '')
         # Fix case sensitivity
         if required_parameter == 'Runtype':
             required_parameter = 'RunType'
@@ -217,9 +217,11 @@ def minimal_requirement_tests(endpoint, required_params, pause=1):
     nullable_parameters = []
     if nba_stats_response.get_parameters():
         response_parameters = nba_stats_response.get_parameters()
-        for parameter, value in response_parameters.items():
-            if value is None or value is "":
-                nullable_parameters.append(parameter)
+        nullable_parameters.extend(
+            parameter
+            for parameter, value in response_parameters.items()
+            if value is None or value is ""
+        )
 
         for parameter in all_parameters:
             if parameter in response_parameters.keys():
@@ -298,7 +300,6 @@ def analyze_endpoint(endpoint, pause=1):
 
     # Testing endpoint with all parameters with empty values to see which ones are allowed to be nullable.
     nullable_parameters += nullable_parameters_test(endpoint=endpoint, all_parameters=all_parameters)
-    nullable_parameters = list(set(nullable_parameters))
     time.sleep(pause)
 
     # Testing endpoint with invalid values to grab matching patterns.
@@ -310,9 +311,8 @@ def analyze_endpoint(endpoint, pause=1):
 
     all_parameters.sort()
     required_parameters.sort()
-    nullable_parameters.sort()
-
-    endpoint_analysis = {
+    nullable_parameters = sorted(set(nullable_parameters))
+    return {
         'status': status,
         'endpoint': endpoint,
         'parameters': all_parameters,
@@ -322,8 +322,6 @@ def analyze_endpoint(endpoint, pause=1):
         'data_sets': data_sets,
         'last_validated_date': str(datetime.now().date()),
     }
-
-    return endpoint_analysis
 
 
 def load_endpoint_file(file_path=None, file_name='analysis.json'):
